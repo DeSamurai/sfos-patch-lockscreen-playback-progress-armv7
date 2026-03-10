@@ -1,0 +1,142 @@
+diff --git a/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml b/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml
+index aad0670..732f968 100644
+--- a/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml
++++ b/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml
+@@ -8,6 +8,12 @@ MouseArea {
+     property alias artistAndSongText: artistAndSong.artistAndSongText
+     property alias applicationName: appName.text
+     property alias albumArtSource: albumArt.sourceUrl
++
++    // -- Patch
++    property var playbackDuration
++    property int currentPosition: 0
++    // -- Patch
++
+     property bool nextEnabled
+     property bool previousEnabled
+     property bool playEnabled
+@@ -127,12 +133,64 @@ MouseArea {
+         FadeAnimation { target: albumArt; properties: "opacity"; to: 1.0 }
+     }
+ 
++    // -- Patch
++    Column {
++        id: playbackArea
++        spacing: Theme.paddingMedium
++        width: parent.width
++        y: Math.max(Theme.itemSizeLarge, artistAndSong.height)
++        visible: {
++            var supportedApps = ["media"]
++            return supportedApps.indexOf(mprisControls.applicationName.toLowerCase()) !== -1
++        }
++
++        Item {
++            width: parent.width
++            height: Math.max(currentPositionEl.height, playbackDurationEl.height)
++
++            PlaybackTimeLabel {
++                id: currentPositionEl
++                anchors.left: parent.left
++                timeValue: Math.round(currentPosition / 1000)
++            }
++
++            PlaybackTimeLabel {
++                id: playbackDurationEl
++                anchors.right: parent.right
++                timeValue: playbackDuration
++            }
++        }
++
++        ProgressBar {
++            id: playbackProgress
++            maximumValue: isNaN(playbackDuration / 1) ? 1 : playbackDuration
++            value: isNaN(playbackDuration / 1) ? 1 : Math.round(currentPosition / 1000)
++            width: parent.width
++        }
++    }
++
++    SequentialAnimation {
++        id: playbackFadeAnimation
++        FadeAnimation { target: playbackArea; properties: "opacity"; to: 0.0 }
++        FadeAnimation { target: playbackArea; properties: "opacity"; to: 1.0 }
++    }
++
++    onPlaybackDurationChanged: {
++        if (playbackFadeAnimation.running) {
++            playbackFadeAnimation.complete()
++        }
++        playbackFadeAnimation.running = true
++    }
++    // -- Patch
++
+     Row {
+         id: playerButtons
+ 
+         spacing: mprisControls.width / 3 - mprisControls._squareSize
+         anchors.horizontalCenter: parent.horizontalCenter
+-        y: Math.max(Theme.itemSizeLarge, artistAndSong.height)
++        // -- Patch
++        y: Math.max(Theme.itemSizeLarge, artistAndSong.height + (playbackArea.visible ? playbackArea.height : 0))
++        // -- Patch
+ 
+         IconButton {
+             enabled: mprisControls.previousEnabled
+diff --git a/usr/lib/qt5/qml/Sailfish/Media/MprisManagerControls.qml b/usr/lib/qt5/qml/Sailfish/Media/MprisManagerControls.qml
+index 0c71ef8..ee543e6 100644
+--- a/usr/lib/qt5/qml/Sailfish/Media/MprisManagerControls.qml
++++ b/usr/lib/qt5/qml/Sailfish/Media/MprisManagerControls.qml
+@@ -18,6 +18,11 @@ MprisControls {
+     applicationName: mprisController.identity
+     albumArtSource: mprisController.metaData.artUrl || ''
+ 
++    // -- Patch
++    playbackDuration: mprisController.metaData.duration
++    currentPosition: mprisController.position
++    // -- Patch
++
+     nextEnabled: mprisController.canGoNext
+     previousEnabled: mprisController.canGoPrevious
+     playEnabled: mprisController.canPlay
+diff --git a/usr/lib/qt5/qml/Sailfish/Media/PlaybackTimeLabel.qml b/usr/lib/qt5/qml/Sailfish/Media/PlaybackTimeLabel.qml
+new file mode 100644
+index 0000000..7391f85
+--- /dev/null
++++ b/usr/lib/qt5/qml/Sailfish/Media/PlaybackTimeLabel.qml
+@@ -0,0 +1,37 @@
++import QtQuick 2.0
++import Sailfish.Silica 1.0
++
++Rectangle {
++    property var timeValue
++
++    width: valueLbl.width + Theme.paddingMedium
++    height: valueLbl.height + Theme.paddingSmall
++    color: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity)
++    radius: 15
++
++    Label {
++        id: valueLbl
++        text: formatTimeValue(timeValue)
++        anchors.horizontalCenter: parent.horizontalCenter
++    }
++
++    function formatTimeValue(value) {
++        var hours = Math.floor(value / 3600);
++        var minutes = Math.floor((value % 3600) / 60);
++        var seconds = value % 60;
++
++        if (minutes !== minutes) {
++            return "00:00"
++        }
++
++        var h = (hours < 10) ? "0" + hours : hours;
++        var m = (minutes < 10) ? "0" + minutes : minutes;
++        var s = (seconds < 10) ? "0" + seconds : seconds;
++
++        if (hours > 0) {
++            return "" + h + ":" + m + ":" + s;
++        } else {
++            return "" + m + ":" + s;
++        }
++    }
++}
