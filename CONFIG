@@ -55,13 +55,13 @@ Maintainer: DeSamurai
 Summary: Shows playback progress on the lock screen
 Description:
 - This patch adds playback progress on the lock screen. The patch relies on Mpris component.
-- NOTE!: The only supported app is Media(Jolla). The supported apps list might be extended in the future.
+- NOTE!: The only supported apps are Media(Jolla) and gPodder. The supported apps list might be extended in the future.
 
 #DiscussionLink: https://example.org/discussion
 #DonationsLink: https://example.org/donations
 SourcesLink: https://github.com/DeSamurai/sfos-patch-lockscreen-playback-progress-armv7
 
-Version: 0.1.0
+Version: 0.2.0
 Release: 1
 License: GPL-3.0-or-later
 
@@ -101,12 +101,18 @@ CompatibleVersions:
 - 5.0.0.71
 - 5.0.0.72
 - 5.0.0.73
+- 5.0.0.76
+- 5.0.0.77
 
 # Entries should be in descending order (most recent at the top), formatted like this:
 # - x.y.z-r (yyyy-mm-dd):
 # - - short summary of a change
 # - - further summary of another change
 Changelog:
+- 0.2.0 (2026-07-04):
+- - Added support for new compatible SfOS versions;
+- - Added support for another compatible application, gPodder (it will work properly after the app update release);
+- - Fixed visibility bugs.
 - 0.1.0 (2026-03-10):
 - - initial public release
 

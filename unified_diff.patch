@@ -1,5 +1,5 @@
 diff --git a/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml b/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml
-index aad0670..732f968 100644
+index aad0670..c9a7266 100644
 --- a/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml
 +++ b/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml
 @@ -8,6 +8,12 @@ MouseArea {
@@ -15,7 +15,7 @@ index aad0670..732f968 100644
      property bool nextEnabled
      property bool previousEnabled
      property bool playEnabled
-@@ -127,12 +133,64 @@ MouseArea {
+@@ -127,12 +133,65 @@ MouseArea {
          FadeAnimation { target: albumArt; properties: "opacity"; to: 1.0 }
      }
  
@@ -26,8 +26,9 @@ index aad0670..732f968 100644
 +        width: parent.width
 +        y: Math.max(Theme.itemSizeLarge, artistAndSong.height)
 +        visible: {
-+            var supportedApps = ["media"]
++            var supportedApps = ["media", "gpodder"]
 +            return supportedApps.indexOf(mprisControls.applicationName.toLowerCase()) !== -1
++                    && appName.visible
 +        }
 +
 +        Item {
