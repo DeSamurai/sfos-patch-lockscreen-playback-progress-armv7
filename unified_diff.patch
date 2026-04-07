@@ -1,5 +1,5 @@
 diff --git a/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml b/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml
-index aad0670..c9a7266 100644
+index aad0670..e05bf4c 100644
 --- a/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml
 +++ b/usr/lib/qt5/qml/Sailfish/Media/MprisControls.qml
 @@ -8,6 +8,12 @@ MouseArea {
@@ -15,7 +15,7 @@ index aad0670..c9a7266 100644
      property bool nextEnabled
      property bool previousEnabled
      property bool playEnabled
-@@ -127,12 +133,65 @@ MouseArea {
+@@ -127,12 +133,72 @@ MouseArea {
          FadeAnimation { target: albumArt; properties: "opacity"; to: 1.0 }
      }
  
@@ -29,6 +29,13 @@ index aad0670..c9a7266 100644
 +            var supportedApps = ["media", "gpodder"]
 +            return supportedApps.indexOf(mprisControls.applicationName.toLowerCase()) !== -1
 +                    && appName.visible
++        }
++        property var playbackDuration: {
++            if (mprisControls.applicationName.toLowerCase() === "media") {
++                return Math.round(mprisControls.playbackDuration)
++            } else {
++                return Math.round(mprisControls.playbackDuration / 1000)
++            }
 +        }
 +
 +        Item {
@@ -44,14 +51,14 @@ index aad0670..c9a7266 100644
 +            PlaybackTimeLabel {
 +                id: playbackDurationEl
 +                anchors.right: parent.right
-+                timeValue: playbackDuration
++                timeValue: playbackArea.playbackDuration
 +            }
 +        }
 +
 +        ProgressBar {
 +            id: playbackProgress
-+            maximumValue: isNaN(playbackDuration / 1) ? 1 : playbackDuration
-+            value: isNaN(playbackDuration / 1) ? 1 : Math.round(currentPosition / 1000)
++            maximumValue: isNaN(playbackArea.playbackDuration / 1) ? 1 : playbackArea.playbackDuration
++            value: isNaN(playbackArea.playbackDuration / 1) ? 1 : Math.round(currentPosition / 1000)
 +            width: parent.width
 +        }
 +    }

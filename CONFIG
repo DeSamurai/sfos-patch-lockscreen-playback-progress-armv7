@@ -61,7 +61,7 @@ Description:
 #DonationsLink: https://example.org/donations
 SourcesLink: https://github.com/DeSamurai/sfos-patch-lockscreen-playback-progress-armv7
 
-Version: 0.2.0
+Version: 0.2.1
 Release: 1
 License: GPL-3.0-or-later
 
@@ -109,6 +109,8 @@ CompatibleVersions:
 # - - short summary of a change
 # - - further summary of another change
 Changelog:
+- 0.2.1 (2026-07-04):
+- - Fixed a bug with displaying the wrong time value.
 - 0.2.0 (2026-07-04):
 - - Added support for new compatible SfOS versions;
 - - Added support for another compatible application, gPodder (it will work properly after the app update release);
